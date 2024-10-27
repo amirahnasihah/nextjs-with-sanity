@@ -15,11 +15,12 @@ const urlFor = (source: SanityImageSource) =>
 
 const options = { next: { revalidate: 30 } };
 
-export default async function PostDetail({
-  params,
-}: {
+// Define custom props type for PostDetail
+interface PostDetailProps {
   params: { slug: string };
-}) {
+}
+
+export default async function PostDetail({ params }: PostDetailProps) {
   const { slug } = params;
 
   const post = await client.fetch<SanityDocument>(
