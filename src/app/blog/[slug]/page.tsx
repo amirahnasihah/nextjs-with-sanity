@@ -20,7 +20,7 @@ export default async function PostDetail({
 }: {
   params: { slug: string };
 }) {
-  const { slug } = params; // Remove await, as params is directly accessible
+  const { slug } = params;
 
   const post = await client.fetch<SanityDocument>(
     POST_QUERY,
