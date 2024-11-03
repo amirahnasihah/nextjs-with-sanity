@@ -14,20 +14,25 @@ const urlFor = (source: SanityImageSource) =>
     : null;
 
 const options = { next: { revalidate: 30 } };
-type Params = Promise<{ slug: string[] }>;
 
 export default async function PostPage({
   params,
 }: {
-  params: { params: Params };
+  params: Promise<{ slug: string }>;
 }) {
-  const post = await client.fetch<SanityDocument>(POST_QUERY, params, options);
+  const { slug } = await params; // Await params before accessing slug
+
+  const post = await client.fetch<SanityDocument>(
+    POST_QUERY,
+    { slug },
+    options
+  );
   const postImageUrl = post.image
     ? urlFor(post.image)?.width(550).height(310).url()
     : null;
 
   return (
-    <main className="container mx-auto min-h-screen max-w-3xl p-8 flex flex-col gap-4">
+    <div className="container mx-auto min-h-screen max-w-3xl p-8 flex flex-col gap-4">
       <Link href="/blog" className="hover:underline">
         ← Back to posts
       </Link>
@@ -36,15 +41,19 @@ export default async function PostPage({
           src={postImageUrl}
           alt={post.title}
           className="aspect-video rounded-xl"
-          width={500}
-          height={500}
+          width={550}
+          height={550}
+          style={{
+            width: "auto",
+            height: "auto",
+          }}
         />
       )}
-      <h1 className="text-4xl font-bold mb-8">{post.title}</h1>
+      <p className="text-4xl font-bold mb-8">{post.title}</p>
       <div className="prose">
         <p>Published: {new Date(post.publishedAt).toLocaleDateString()}</p>
         {Array.isArray(post.body) && <PortableText value={post.body} />}
       </div>
-    </main>
+    </div>
   );
 }
